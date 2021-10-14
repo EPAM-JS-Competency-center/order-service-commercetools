@@ -1,0 +1,12 @@
+dev01: localawsenv
+dev02: localawsenv
+dev03: localawsenv
+dev04: localawsenv
+dev05: localawsenv
+dev15: localawsenv
+ops01: localawsenv
+tst01: ""
+uat01: ""
+prd01: ""
+dev00: ""
+unstaged: ""

@@ -1,0 +1,19 @@
+createOrder:
+  handler: src/handlers/createOrder.handler
+  name: ${self:custom.namePrefix}-create-order-handler
+  events:
+    - http:
+        method: post
+        path: orders
+        cors: true
+        private: true
+reserveOrder:
+  handler: src/handlers/reserveOrder.handler
+  name: ${self:custom.namePrefix}-reserve-order-handler
+  events:
+    - sns: "omsReserveSnsTopic"
+updateOrder:
+  handler: src/handlers/updateOrder.handler
+  name: ${self:custom.namePrefix}-update-order-handler
+  events:
+    - sns: "ctUpdateOrderSnsTopic"

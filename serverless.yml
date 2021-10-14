@@ -1,0 +1,77 @@
+service: ${self:custom.env.serviceName, 'unknown'}-service
+
+variablesResolutionMode: 20210326
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: ${self:custom.env.memorySize}
+  stage: ${env:ENV, 'unstaged'}
+  region: ${opt:region, 'us-east-1'}
+  stackName: ${self:service}-${self:provider.stage}
+  profile: ${self:custom.profiles.${self:provider.stage}}
+  logRetentionInDays: ${self:custom.env.lambdaLogsRotation}
+  lambdaHashingVersion: ${self:custom.env.lambdaHashingVersion}
+  apiGateway:
+    usagePlan:
+      quota:
+        limit: 5000
+        offset: 0
+        period: DAY
+  iam:
+    role: ${self:custom.env.role}
+
+  environment:
+    REGION: ${self:provider.region}
+    SERVICE_NAME: ${self:service}
+    STAGE: ${self:provider.stage}
+    OMS_RESERVE_SNS_TOPIC_ARN:
+      Fn::Join:
+        - ""
+        - - "arn:aws:sns:${self:provider.region}:"
+          - Ref: "AWS::AccountId"
+          - ":omsReserveSnsTopic"
+    CT_UPDATE_ORDER_SNS_TOPIC_ARN:
+      Fn::Join:
+        - ""
+        - - "arn:aws:sns:${self:provider.region}:"
+          - Ref: "AWS::AccountId"
+          - ":ctUpdateOrderSnsTopic"
+
+custom:
+  profiles: ${file(./sls/profiles.yml)}
+  deploymentBuckets: ${file(./sls/deployment-buckets.yml)}
+  accountId: "#{AWS::AccountId}"
+  namePrefix: ${self:service}-${self:provider.stage}-${self:provider.region}
+  webpack:
+    packager: "yarn"
+    keepOutputDirectory: true
+  env: ${file(./sls/env.yml)}
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - "!.git"
+    - "!.gitignore"
+    - "!.editorconfig"
+    - "!.eslintignore"
+    - "!.eslintrc.js"
+    - "!sls/**"
+    - "!README.md"
+    - "!serverless.yml"
+    - "!jest.config.js"
+    - "!tsconfig.json"
+    - "!webpack.config.json"
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+  - serverless-deployment-bucket
+  - serverless-uuid
+
+functions:
+  - ${file(./sls/functions.yml)}
+
+resources:
+  - ${file(./sls/resources.yml)}

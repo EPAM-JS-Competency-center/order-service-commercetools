@@ -1,0 +1,12 @@
+version: 0.1
+phases:
+  install:
+    commands:
+      - npm install -g yarn
+      - yarn
+  build:
+    commands:
+      - yarn test
+  post_build:
+    commands:
+      - echo "OK"

@@ -1,0 +1,5 @@
+node_modules
+build
+.webpack
+.serverless
+webpack.config.js

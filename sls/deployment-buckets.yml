@@ -1,0 +1,4 @@
+dev: dev-serverless
+tst: tst-serverless
+uat: uat-serverless
+prd: prd-serverless

@@ -1,0 +1,65 @@
+{
+  "name": "aws-rest-api-serverless-lambda",
+  "version": "1.0.0",
+  "private": true,
+  "author": "EPAM JSCC",
+  "license": "MIT",
+  "scripts": {
+    "start": "serverless offline -s dev",
+    "build": "ENV=$(echo $ENV | tr '[:upper:]' '[:lower:]') ./node_modules/.bin/sls package --package ./artifacts --config ./serverless.yml --region ${REGION:-us-east-1}",
+    "deploy-package": "ENV=$(echo $ENV | tr '[:upper:]' '[:lower:]') ./node_modules/.bin/sls deploy --package ./artifacts --config ./serverless.yml -v --region ${REGION:-us-east-1}",
+    "deploy": "ENV=$(echo $ENV | tr '[:upper:]' '[:lower:]') ./node_modules/.bin/sls deploy --config ./serverless.yml -v --region ${REGION:-us-east-1}",
+    "destroy": "ENV=$(echo $ENV | tr '[:upper:]' '[:lower:]') ./node_modules/.bin/sls remove --config ./serverless.yml -v --region ${REGION:-us-east-1}",
+    "test": "./node_modules/.bin/jest --silent",
+    "lint": "./node_modules/.bin/eslint . --ext .js,.jsx,.ts,.tsx",
+    "webpack": "./node_modules/.bin/sls webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EPAM-JS-Competency-center/aws-rest-api-serverless-lambda.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EPAM-JS-Competency-center/aws-rest-api-serverless-lambda/issues"
+  },
+  "homepage": "https://github.com/EPAM-JS-Competency-center/aws-rest-api-serverless-lambda#readme",
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn test"
+    }
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.76",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.6.1",
+    "@types/node-fetch": "^2.5.10",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
+    "@typescript-eslint/parser": "^4.25.0",
+    "aws-sdk": "^2.918.0",
+    "eslint": "^7.27.0",
+    "eslint-plugin-jest": "^24.3.6",
+    "husky": "^6.0.0",
+    "jest": "^27.0.2",
+    "jest-standard-reporter": "^2.0.0",
+    "serverless": "^2.57.0",
+    "serverless-deployment-bucket": "^1.5.1",
+    "serverless-offline": "^8.1.0",
+    "serverless-plugin-ifelse": "^1.0.7",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-webpack": "^5.5.0",
+    "terser-webpack-plugin": "^5.1.2",
+    "ts-jest": "^27.0.1",
+    "ts-loader": "^9.2.2",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
+    "typescript": "^4.3.2",
+    "webpack": "^5.38.1"
+  },
+  "dependencies": {
+    "joi": "^17.4.0",
+    "node-fetch": "^2.6.1",
+    "serverless-offline-sns": "^0.76.0",
+    "serverless-uuid": "^0.1.4",
+    "uuid": "^8.3.2"
+  }
+}
