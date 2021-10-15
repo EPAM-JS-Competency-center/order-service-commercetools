@@ -13,6 +13,73 @@ Resources:
             - "${self:provider.region}"
             - ".amazonaws.com/"
             - "${self:provider.stage}"
+
+  omsSnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: "OMS Sns Topic"
+      TopicName: ${self:custom.namePrefix}-oms-sns-topic
+
+  omsReserveOrderEventsQueueSubscription:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt omsReserveOrderEventsQueue.Arn
+      TopicArn: ${self:custom.omsSnsTopicArn}
+      FilterPolicy:
+        status:
+          - created
+
+  ctUpdateOrderEventsQueueSubscription:
+    Type: "AWS::SNS::Subscription"
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt ctUpdateOrderEventsQueue.Arn
+      TopicArn: ${self:custom.omsSnsTopicArn}
+      FilterPolicy:
+        status:
+          - reserved
+
+  omsReserveOrderEventsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:custom.namePrefix}-oms-reserve-order-events-queue
+
+  ctUpdateOrderEventsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:custom.namePrefix}-ct-update-order-events-queue
+
+  omsReserveOrderSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref omsReserveOrderEventsQueue
+      PolicyDocument:
+        Statement:
+          - Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+            Effect: Allow
+            Resource: !GetAtt omsReserveOrderEventsQueue.Arn
+            Principal:
+              AWS: "*"
+
+  ctUpdateOrderSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref ctUpdateOrderEventsQueue
+      PolicyDocument:
+        Statement:
+          - Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+            Effect: Allow
+            Resource: !GetAtt ctUpdateOrderEventsQueue.Arn
+            Principal:
+              AWS: "*"
+
   iamLambdaRoleExecution:
     Type: AWS::IAM::Role
     Properties:
@@ -41,13 +108,34 @@ Resources:
                   - logs:PutLogEvents
                 Resource:
                   - "arn:aws:logs:*:*:*"
-  omsReserveSnsTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      DisplayName: "Reserve Order via OMS Lambda Topic"
-      TopicName: OMSReserveOrderTopic
-  ctUpdateOrderSnsTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      DisplayName: "Update Order via OMS Lambda Topic"
-      TopicName: OMSUpdateOrderTopic
+        - PolicyName: SNS_Send_Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !Ref omsSnsTopic
+        - PolicyName: SQS_Reserve_Order_Receive_Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !GetAtt omsReserveOrderEventsQueue.Arn
+        - PolicyName: SQS_Update_Order_Receive_Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !GetAtt ctUpdateOrderEventsQueue.Arn

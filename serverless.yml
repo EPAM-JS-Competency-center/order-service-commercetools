@@ -25,18 +25,9 @@ provider:
     REGION: ${self:provider.region}
     SERVICE_NAME: ${self:service}
     STAGE: ${self:provider.stage}
-    OMS_RESERVE_SNS_TOPIC_ARN:
-      Fn::Join:
-        - ""
-        - - "arn:aws:sns:${self:provider.region}:"
-          - Ref: "AWS::AccountId"
-          - ":omsReserveSnsTopic"
-    CT_UPDATE_ORDER_SNS_TOPIC_ARN:
-      Fn::Join:
-        - ""
-        - - "arn:aws:sns:${self:provider.region}:"
-          - Ref: "AWS::AccountId"
-          - ":ctUpdateOrderSnsTopic"
+    OMS_SNS_TOPIC_ARN: ${self:custom.omsSnsTopicArn}
+    OMS_RESERVE_ORDER_EVENTS_QUEUE_URL: ${self:custom.omsReserveOrderEventsQueueUrl}
+    CT_UPDATE_ORDER_EVENTS_QUEUE_URL: ${self:custom.ctUpdateOrderEventsQueueUrl}
 
 custom:
   profiles: ${file(./sls/profiles.yml)}
@@ -46,6 +37,9 @@ custom:
   webpack:
     packager: "yarn"
     keepOutputDirectory: true
+  omsSnsTopicArn: { "Ref": omsSnsTopic }
+  omsReserveOrderEventsQueueUrl: !Ref omsReserveOrderEventsQueue
+  ctUpdateOrderEventsQueueUrl: !Ref ctUpdateOrderEventsQueue
   env: ${file(./sls/env.yml)}
 
 package:

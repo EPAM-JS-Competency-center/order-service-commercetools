@@ -11,9 +11,11 @@ reserveOrder:
   handler: src/handlers/reserveOrder.handler
   name: ${self:custom.namePrefix}-reserve-order-handler
   events:
-    - sns: "omsReserveSnsTopic"
+    - sqs:
+        arn: !GetAtt omsReserveOrderEventsQueue.Arn
 updateOrder:
   handler: src/handlers/updateOrder.handler
   name: ${self:custom.namePrefix}-update-order-handler
   events:
-    - sns: "ctUpdateOrderSnsTopic"
+    - sqs:
+        arn: !GetAtt ctUpdateOrderEventsQueue.Arn

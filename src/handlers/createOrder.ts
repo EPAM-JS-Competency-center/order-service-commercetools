@@ -2,12 +2,9 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import { HttpResponse } from "../helpers/HttpResponse";
 import { FakeOmsProvider, OrderProvider } from "../providers";
 import { v4 } from "uuid";
-import { OMS_RESERVE_SNS_TOPIC_ARN } from "../constants";
+import { OMS_SNS_TOPIC_ARN } from "../constants";
 
-const omsProvider = new FakeOmsProvider({
-  reserveOrderTopicArn: OMS_RESERVE_SNS_TOPIC_ARN,
-});
-
+const omsProvider = new FakeOmsProvider(OMS_SNS_TOPIC_ARN);
 const orderProvider = new OrderProvider(omsProvider);
 
 export const handler: APIGatewayProxyHandler = async (event) => {
