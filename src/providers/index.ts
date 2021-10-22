@@ -1,2 +1,2 @@
-export { OrderProvider } from "./OrderProvider";
-export { FakeOmsProvider } from "./FakeOmsProvider";
+export { OrderProvider } from './OrderProvider';
+export { FakeOmsProvider } from './FakeOmsProvider';

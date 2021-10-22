@@ -28,7 +28,7 @@ Resources:
       TopicArn: ${self:custom.omsSnsTopicArn}
       FilterPolicy:
         status:
-          - created
+          - Open
 
   ctUpdateOrderEventsQueueSubscription:
     Type: "AWS::SNS::Subscription"
@@ -38,7 +38,7 @@ Resources:
       TopicArn: ${self:custom.omsSnsTopicArn}
       FilterPolicy:
         status:
-          - reserved
+          - Confirmed
 
   omsReserveOrderEventsQueue:
     Type: AWS::SQS::Queue

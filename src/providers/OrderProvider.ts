@@ -1,34 +1,33 @@
-import { FakeOmsProvider } from "providers";
-import { Order } from "../types/order";
+import { Order } from '@commercetools/typescript-sdk';
+import { FakeOmsProvider } from 'providers';
+import { OrderDetails } from '../types/order-details';
+import { CommerceToolsProvider } from './CommerceToolsProvider';
 
 /**
  * Handle all communication with the commerce tools
  */
 export class OrderProvider {
-  constructor(private readonly oms?: FakeOmsProvider) {}
+  constructor(
+    private readonly cts: CommerceToolsProvider,
+    private readonly oms?: FakeOmsProvider
+  ) {}
 
-  async createOrder(order: Order): Promise<Order> {
-    console.log("Order Provider: create order invoking");
+  async createOrder(orderDetails: OrderDetails): Promise<Order> {
+    console.log('Order Provider: Create Order Invoking...');
 
-    // TODO: integration with commercetools
-    const createOrderResults = await new Promise<Order>((resolve) =>
-      setTimeout(
-        () => resolve({ ...order, state: "created" } as Order),
-        Math.random()
-      )
-    );
+    const cart = await this.cts.createCart(orderDetails);
+    const order = await this.cts.createOrderByCart(cart);
 
-    if ((createOrderResults.state = "created") && this.oms) {
-      console.log("Order Provider: reserve order invoking via oms system");
-
-      this.oms.reserveOrder(createOrderResults);
+    if (order.orderState == 'Open' && this.oms) {
+      await this.oms.reserveOrder(order);
     }
 
-    return createOrderResults;
+    return order;
   }
 
   async updateOrder(order: Order) {
-    // TODO: integration with commercetools
-    return order;
+    console.log('Order Provider: Update Order Invoking...');
+
+    return this.cts.updateOrder(order);
   }
 }

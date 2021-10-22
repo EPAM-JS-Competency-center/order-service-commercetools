@@ -1,5 +1,5 @@
-import AWS, { SNS } from "aws-sdk";
-import { Order } from "types/order";
+import { Order } from '@commercetools/typescript-sdk';
+import AWS, { SNS } from 'aws-sdk';
 
 const sns = new AWS.SNS();
 
@@ -9,25 +9,32 @@ const sns = new AWS.SNS();
 export class FakeOmsProvider {
   constructor(private readonly omsSnsArn: string) {}
 
-  async reserveOrder(createOrderResults: Order) {
+  async reserveOrder(order: Order) {
     const messageData = {
-      Message: JSON.stringify(createOrderResults),
+      Message: JSON.stringify(order),
       TopicArn: this.omsSnsArn,
       MessageAttributes: {
         status: {
-          DataType: "String",
-          StringValue: createOrderResults.state,
+          DataType: 'String',
+          StringValue: order.orderState,
         },
       } as SNS.MessageAttributeMap,
     };
 
-    console.log("Publishing message to Reserve Order SNS:", messageData);
+    console.log(
+      'OMS Provider: Publishing message to Reserve Order SNS:',
+      messageData
+    );
 
     return sns
       .publish(messageData)
       .promise()
-      .then((res) => console.log("Publishing Finished: OMS Reserve", res))
-      .catch((e) => console.log("Publishing Failed: OMS Reserve", e));
+      .then((res) =>
+        console.log('OMS Provider: Publishing Reserve Order Successful!', res)
+      )
+      .catch((e) =>
+        console.log('OMS Provider: Publishing Reserve Order Failed!', e)
+      );
   }
 
   async updateOrder(order: Order) {
@@ -36,18 +43,25 @@ export class FakeOmsProvider {
       TopicArn: this.omsSnsArn,
       MessageAttributes: {
         status: {
-          DataType: "String",
-          StringValue: order.state,
+          DataType: 'String',
+          StringValue: order.orderState,
         },
       } as SNS.MessageAttributeMap,
     };
 
-    console.log("Publishing message to Update Order SNS:", messageData);
+    console.log(
+      'OMS Provider: Publishing message to Update Order SNS:',
+      messageData
+    );
 
     return sns
       .publish(messageData)
       .promise()
-      .then((res) => console.log("Publishing Finished: CT Update", res))
-      .catch((e) => console.log("Publishing Failed: CT Update", e));
+      .then((res) =>
+        console.log('OMS Provider: Publishing Update Order Successful!', res)
+      )
+      .catch((e) =>
+        console.log('OMS Provider: Publishing Update Order Failed', e)
+      );
   }
 }

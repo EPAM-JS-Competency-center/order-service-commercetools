@@ -28,8 +28,15 @@ provider:
     OMS_SNS_TOPIC_ARN: ${self:custom.omsSnsTopicArn}
     OMS_RESERVE_ORDER_EVENTS_QUEUE_URL: ${self:custom.omsReserveOrderEventsQueueUrl}
     CT_UPDATE_ORDER_EVENTS_QUEUE_URL: ${self:custom.ctUpdateOrderEventsQueueUrl}
+    CTP_PROJECT_KEY: ${self:custom.secret.CTP_PROJECT_KEY}
+    CTP_CLIENT_SECRET: ${self:custom.secret.CTP_CLIENT_SECRET}
+    CTP_CLIENT_ID: ${self:custom.secret.CTP_CLIENT_ID}
+    CTP_AUTH_URL: ${self:custom.secret.CTP_AUTH_URL}
+    CTP_API_URL: ${self:custom.secret.CTP_API_URL}
+    CTP_SCOPES: ${self:custom.secret.CTP_SCOPES}
 
 custom:
+  secret: ${file(./sls/.env-secret.yml)}
   profiles: ${file(./sls/profiles.yml)}
   deploymentBuckets: ${file(./sls/deployment-buckets.yml)}
   accountId: "#{AWS::AccountId}"

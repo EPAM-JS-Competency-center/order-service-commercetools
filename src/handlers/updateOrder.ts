@@ -1,23 +1,27 @@
-import { SQSHandler, SQSEvent } from "aws-lambda";
-import { OrderProvider } from "providers";
-import { Order } from "types/order";
+import { Order } from '@commercetools/typescript-sdk';
+import { SQSHandler, SQSEvent } from 'aws-lambda';
+import { OrderProvider } from 'providers';
+import { CommerceToolsProvider } from 'providers/CommerceToolsProvider';
 
-const orderProvider = new OrderProvider();
+const ctsProvider = new CommerceToolsProvider(
+  process.env as { [key: string]: string }
+);
+const orderProvider = new OrderProvider(ctsProvider);
 
 export const handler: SQSHandler = async (event: SQSEvent) => {
   try {
-    console.log("Lambda invocation with event: ", JSON.stringify(event));
+    console.log('Update Order Lambda: Invoking Event: ', JSON.stringify(event));
 
     const order = JSON.parse(
-      JSON.parse(event.Records[0].body || "{}").Message || "{}"
+      JSON.parse(event.Records[0].body || '{}').Message || '{}'
     ) as Order;
 
-    console.log("Order data for updating: ", order);
+    console.log('Update Order Lambda: Order Details: ', order);
 
     const result = await orderProvider.updateOrder(order);
 
-    console.log("Updating successful!", result);
+    console.log('Update Order Lambda: Updating successful!', result);
   } catch (e) {
-    console.error("Error encountered", e);
+    console.error('Update Order Lambda: Error encountered', e);
   }
 };
