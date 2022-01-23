@@ -62,7 +62,7 @@
     "@commercetools/typescript-sdk": "^0.0.22",
     "dotenv": "^10.0.0",
     "joi": "^17.4.0",
-    "node-fetch": "^2",
+    "node-fetch": "^3",
     "serverless-offline-sns": "^0.76.0",
     "serverless-uuid": "^0.1.4",
     "uuid": "^8.3.2"
